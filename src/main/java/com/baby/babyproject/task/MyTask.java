@@ -19,7 +19,7 @@ public class MyTask {
 
     private static Integer time = 3600;
 
-    @Scheduled(cron = "0/1 * * * * ?")
+    @Scheduled(cron = "0/1 * * * * ?")// 每秒钟执行一次
     public void myTask(){
         if (time>0){
             log.info("剩余时间："+time--);
