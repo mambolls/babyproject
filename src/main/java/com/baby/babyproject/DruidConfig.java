@@ -14,6 +14,7 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,10 +41,10 @@ import com.alibaba.druid.wall.WallFilter;
  * @version V2.1 * Update Logs: * Name: * Date: * Description: 初始化
  */
 @Configuration
+@Slf4j
 public class DruidConfig {
     
-    private Logger logger = LoggerFactory.getLogger(DruidConfig.class);
-    
+
     @Value("${spring.datasource.url}")
     private String dbUrl;
  
@@ -146,7 +147,7 @@ public class DruidConfig {
         try {
             datasource.setFilters(filters);
         } catch (SQLException e) {
-            logger.error("druid configuration initialization system", e);
+            log.error("druid configuration initialization system", e);
         }
         return datasource;
     }

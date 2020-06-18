@@ -1,6 +1,7 @@
 package com.baby.babyproject.daotest;
 
 import com.alibaba.fastjson.JSON;
+import com.baby.babyproject.module.dao.entity.BabyNames;
 import com.baby.babyproject.module.request.BabyNamesDelReq;
 import com.baby.babyproject.module.request.BabyNamesListReq;
 import com.baby.babyproject.module.request.BabyNamesSaveReq;
@@ -41,7 +42,7 @@ public class ServiceTest {
         babyNamesSaveReq.setBabyNameExplain("呵呵");
         babyNamesSaveReq.setUserName("李林松");
         babyNamesSaveReq.setPhone("1221212121");
-        Result<String> stringResult = this.babyNamesService.insertBabyName(babyNamesSaveReq);
+        Result<BabyNames> stringResult = this.babyNamesService.insertBabyName(babyNamesSaveReq);
         log.info("新增结果：{}", FormatJsonUtil.formatJson(JSON.toJSONString(stringResult)));
     }
 

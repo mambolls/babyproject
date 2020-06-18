@@ -6,6 +6,7 @@ import com.baby.babyproject.module.dao.entity.User;
 import com.baby.babyproject.module.dao.entity.UserExample;
 import com.baby.babyproject.module.dao.server.IBabyNamesServiceDao;
 import com.baby.babyproject.module.dao.server.IUserServiceDao;
+import com.baby.babyproject.module.request.BabyNameReq;
 import com.baby.babyproject.module.request.BabyNamesDelReq;
 import com.baby.babyproject.module.request.BabyNamesListReq;
 import com.baby.babyproject.module.request.BabyNamesSaveReq;
@@ -25,7 +26,6 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @ClassName BabyNamesServiceImpl
@@ -46,7 +46,7 @@ public class BabyNamesServiceImpl implements IBabyNamesService {
     private IUserServiceDao userServiceDao;
 
     @Override
-    public Result<String> insertBabyName(BabyNamesSaveReq req) {
+    public Result<BabyNames> insertBabyName(BabyNamesSaveReq req) {
         User user = new User();
         BabyNames babyNames = new BabyNames();
         String phone = req.getPhone();
@@ -69,7 +69,9 @@ public class BabyNamesServiceImpl implements IBabyNamesService {
         babyNames.setUesrId(user.getId());
         babyNames.setCommitTime(new Date());
         this.babyNamesServiceDao.insertSelective(babyNames);
-        return Result.newSuccess("操作成功！");
+        Result<BabyNames> result = Result.newSuccess(babyNames);
+        result.setMessage("操作成功！");
+        return result;
     }
 
     @Override
@@ -120,5 +122,18 @@ public class BabyNamesServiceImpl implements IBabyNamesService {
         example.createCriteria().andIdIn(req.getIdList());
         this.babyNamesServiceDao.deleteByExample(example);
         return Result.newSuccess("操作成功！");
+    }
+
+    @Override
+    public Result<BabyNamesRsp> getOne(BabyNameReq req) {
+        BabyNames babyName = this.babyNamesServiceDao.selectByPrimaryKey(req.getId()).getObject();
+        if (ObjectHelper.isEmpty(babyName)){
+            Result<BabyNamesRsp> result = Result.newSuccess(null);
+            result.setMessage("数据不存在！");
+            return result;
+        }
+        BabyNamesRsp rsp = new BabyNamesRsp();
+        BeanUtils.copyProperties(babyName,rsp);
+        return Result.newSuccess(rsp);
     }
 }

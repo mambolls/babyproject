@@ -970,9 +970,9 @@ public class JedisUtil {
         try {
             jedis = getResource();
             result = jedis.rpop(key);
-            logger.debug("lPush {}", key);
+            logger.debug("rpop {}", key);
         } catch (Exception e) {
-            logger.warn("lPush {}", key, e);
+            logger.warn("rpop {}", key, e);
         } finally {
             returnResource(jedis);
         }

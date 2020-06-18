@@ -1,5 +1,6 @@
 package com.baby.babyproject;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,8 +14,8 @@ import redis.clients.jedis.JedisPoolConfig;
 
 @Configuration
 @EnableCaching
+@Slf4j
 public class RedisConfig extends CachingConfigurerSupport{
-    Logger logger = LoggerFactory.getLogger(RedisConfig.class);
 
     @Value("${spring.redis.host}")
     private String host;
@@ -36,12 +37,12 @@ public class RedisConfig extends CachingConfigurerSupport{
 
     @Bean
     public JedisPool redisPoolFactory() {
-        logger.info("JedisPool注入成功！！");
-        logger.info("redis地址：" + host + ":" + port);
         JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
         jedisPoolConfig.setMaxIdle(maxIdle);
         jedisPoolConfig.setMaxWaitMillis(maxWaitMillis);
         JedisPool jedisPool = new JedisPool(jedisPoolConfig, host, port, timeout, password);
+        log.info("JedisPool注入成功！！");
+        log.info("redis地址：" + host + ":" + port);
         return jedisPool;
     }
 }
