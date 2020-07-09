@@ -2,14 +2,11 @@ package com.baby.babyproject.aop;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.baby.babyproject.compoment.JedisUtil;
 import com.baby.babyproject.compoment.KafkaSender;
 import com.baby.babyproject.constants.Constants;
 import com.baby.babyproject.module.dao.entity.BabyProjectLog;
 import com.baby.babyproject.util.ObjectHelper;
 import com.baby.babyproject.util.RequestUtil;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -50,9 +47,7 @@ public class ApiLogAop {
         HttpServletRequest request = attributes.getRequest();
         // 获取请求参数
         String queryString = request.getQueryString();
-        String mpi = null;
         String params = null;
-        JSONObject paramsObj = null;
         Map<String, String> map = RequestUtil.stringMap(request);
         Object[] arguments  = new Object[args.length];
         for (int i = 0; i < args.length; i++) {
@@ -71,7 +66,6 @@ public class ApiLogAop {
                 }else {
                     params = (String)object;
                 }
-                paramsObj = JSON.parseObject(params);
             } else if ("GET".equals(request.getMethod())) {
                 params = queryString;
              }
@@ -85,23 +79,6 @@ public class ApiLogAop {
         String requestUrl = request.getRequestURL().toString();
         String requestURI = request.getRequestURI();
         // 记录下请求内容
-        log.info("请求IP : " + ip);
-        log.info("请求地址 : " + requestUrl);
-        log.info("请求method : " + request.getMethod());
-        log.info("请求参数: " + params);
-        log.info("响应参数:" + JSONObject.toJSONString(result));
-        if (ObjectHelper.isEmpty(mpi)){
-            try{
-                JSONObject jsonObject = JSON.parseObject(JSONObject.toJSONString(result));
-                Object obj = jsonObject.get("entity");
-                if (obj instanceof JSONObject && ObjectHelper.isEmpty(obj)){
-                    JSONObject entity = (JSONObject) obj;
-                    mpi = (String) entity.get("mpi");
-                }
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
         BabyProjectLog babyProjectLog = new BabyProjectLog();
         babyProjectLog.setId(UUID.randomUUID().toString());
         babyProjectLog.setRequestUrl(requestURI);
@@ -110,6 +87,11 @@ public class ApiLogAop {
         babyProjectLog.setRequest(params);
         babyProjectLog.setResponse(JSONObject.toJSONString(result));
         this.kafkaSender.send(Constants.LOG_TOPIC,JSON.toJSONString(babyProjectLog));
+        log.info("请求IP : " + ip);
+        log.info("请求地址 : " + requestUrl);
+        log.info("请求method : " + request.getMethod());
+        log.info("请求参数: " + params);
+        log.info("响应参数:" + JSONObject.toJSONString(result));
         return result;
     }
 }
