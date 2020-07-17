@@ -1,7 +1,6 @@
 package com.baby.babyproject.module.dao.server.impl;
 
 import com.baby.babyproject.constants.StateNumber;
-import com.baby.babyproject.module.dao.entity.BabyNames;
 import com.baby.babyproject.module.dao.entity.User;
 import com.baby.babyproject.module.dao.entity.UserExample;
 import com.baby.babyproject.module.dao.mapper.UserMapper;
@@ -58,7 +57,7 @@ public class UserServiceDaoImpl implements IUserServiceDao {
     }
 
     @Override
-    public Result deleteByPrimaryKey(Integer id) {
+    public Result deleteByPrimaryKey(String id) {
         try{
             int state = this.userMapper.deleteByPrimaryKey(id);
             if (ObjectHelper.isNotEmpty(state) && 0 < state){
@@ -118,7 +117,7 @@ public class UserServiceDaoImpl implements IUserServiceDao {
     }
 
     @Override
-    public Result<User> selectByPrimaryKey(Integer id) {
+    public Result<User> selectByPrimaryKey(String id) {
         try{
             User User = this.userMapper.selectByPrimaryKey(id);
             return Result.newSuccess(User);

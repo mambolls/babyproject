@@ -16,5 +16,5 @@ import java.io.Serializable;
 public class BabyNameReq implements Serializable {
 
     @NotNull(message = "id不能为空")
-    private Integer id;
+    private String id;
 }

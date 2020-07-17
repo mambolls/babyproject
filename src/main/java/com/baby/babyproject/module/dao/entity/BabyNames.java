@@ -4,24 +4,24 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class BabyNames implements Serializable {
-    private Integer id;
+    private String id;
 
     private String babyName;
 
-    private String babyNameExplain;
-
     private Date commitTime;
 
-    private Integer uesrId;
+    private String uesrId;
+
+    private String babyNameExplain;
 
     private static final long serialVersionUID = 1L;
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setId(String id) {
+        this.id = id == null ? null : id.trim();
     }
 
     public String getBabyName() {
@@ -32,14 +32,6 @@ public class BabyNames implements Serializable {
         this.babyName = babyName == null ? null : babyName.trim();
     }
 
-    public String getBabyNameExplain() {
-        return babyNameExplain;
-    }
-
-    public void setBabyNameExplain(String babyNameExplain) {
-        this.babyNameExplain = babyNameExplain == null ? null : babyNameExplain.trim();
-    }
-
     public Date getCommitTime() {
         return commitTime;
     }
@@ -48,11 +40,19 @@ public class BabyNames implements Serializable {
         this.commitTime = commitTime;
     }
 
-    public Integer getUesrId() {
+    public String getUesrId() {
         return uesrId;
     }
 
-    public void setUesrId(Integer uesrId) {
-        this.uesrId = uesrId;
+    public void setUesrId(String uesrId) {
+        this.uesrId = uesrId == null ? null : uesrId.trim();
+    }
+
+    public String getBabyNameExplain() {
+        return babyNameExplain;
+    }
+
+    public void setBabyNameExplain(String babyNameExplain) {
+        this.babyNameExplain = babyNameExplain == null ? null : babyNameExplain.trim();
     }
 }

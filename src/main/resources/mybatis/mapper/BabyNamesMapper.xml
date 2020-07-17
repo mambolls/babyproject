@@ -2,11 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.baby.babyproject.module.dao.mapper.BabyNamesMapper">
   <resultMap id="BaseResultMap" type="com.baby.babyproject.module.dao.entity.BabyNames">
-    <id column="id" jdbcType="INTEGER" property="id" />
+    <id column="id" jdbcType="VARCHAR" property="id" />
     <result column="baby_name" jdbcType="VARCHAR" property="babyName" />
-    <result column="baby_name_explain" jdbcType="VARCHAR" property="babyNameExplain" />
     <result column="commit_time" jdbcType="TIMESTAMP" property="commitTime" />
-    <result column="uesr_id" jdbcType="INTEGER" property="uesrId" />
+    <result column="uesr_id" jdbcType="VARCHAR" property="uesrId" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.baby.babyproject.module.dao.entity.BabyNames">
+    <result column="baby_name_explain" jdbcType="LONGVARCHAR" property="babyNameExplain" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -67,8 +69,28 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, baby_name, baby_name_explain, commit_time, uesr_id
+    id, baby_name, commit_time, uesr_id
   </sql>
+  <sql id="Blob_Column_List">
+    baby_name_explain
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="com.baby.babyproject.module.dao.entity.BabyNamesExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from baby_names
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
   <select id="selectByExample" parameterType="com.baby.babyproject.module.dao.entity.BabyNamesExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
@@ -84,15 +106,17 @@
       order by ${orderByClause}
     </if>
   </select>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
     select 
     <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
     from baby_names
-    where id = #{id,jdbcType=INTEGER}
+    where id = #{id,jdbcType=VARCHAR}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
     delete from baby_names
-    where id = #{id,jdbcType=INTEGER}
+    where id = #{id,jdbcType=VARCHAR}
   </delete>
   <delete id="deleteByExample" parameterType="com.baby.babyproject.module.dao.entity.BabyNamesExample">
     delete from baby_names
@@ -101,25 +125,25 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.baby.babyproject.module.dao.entity.BabyNames">
-    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
-      SELECT LAST_INSERT_ID()
+    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.String">
+      SELECT UUID()
     </selectKey>
-    insert into baby_names (baby_name, baby_name_explain, commit_time, 
-      uesr_id)
-    values (#{babyName,jdbcType=VARCHAR}, #{babyNameExplain,jdbcType=VARCHAR}, #{commitTime,jdbcType=TIMESTAMP}, 
-      #{uesrId,jdbcType=INTEGER})
+    insert into baby_names (id,baby_name, commit_time, uesr_id,
+      baby_name_explain)
+    values (#{id,jdbcType=VARCHAR},#{babyName,jdbcType=VARCHAR}, #{commitTime,jdbcType=TIMESTAMP}, #{uesrId,jdbcType=VARCHAR},
+      #{babyNameExplain,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.baby.babyproject.module.dao.entity.BabyNames">
-    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
-      SELECT LAST_INSERT_ID()
+    <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.String">
+      SELECT UUID()
     </selectKey>
     insert into baby_names
     <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
       <if test="babyName != null">
         baby_name,
-      </if>
-      <if test="babyNameExplain != null">
-        baby_name_explain,
       </if>
       <if test="commitTime != null">
         commit_time,
@@ -127,19 +151,25 @@
       <if test="uesrId != null">
         uesr_id,
       </if>
+      <if test="babyNameExplain != null">
+        baby_name_explain,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
       <if test="babyName != null">
         #{babyName,jdbcType=VARCHAR},
-      </if>
-      <if test="babyNameExplain != null">
-        #{babyNameExplain,jdbcType=VARCHAR},
       </if>
       <if test="commitTime != null">
         #{commitTime,jdbcType=TIMESTAMP},
       </if>
       <if test="uesrId != null">
-        #{uesrId,jdbcType=INTEGER},
+        #{uesrId,jdbcType=VARCHAR},
+      </if>
+      <if test="babyNameExplain != null">
+        #{babyNameExplain,jdbcType=LONGVARCHAR},
       </if>
     </trim>
   </insert>
@@ -153,32 +183,42 @@
     update baby_names
     <set>
       <if test="record.id != null">
-        id = #{record.id,jdbcType=INTEGER},
+        id = #{record.id,jdbcType=VARCHAR},
       </if>
       <if test="record.babyName != null">
         baby_name = #{record.babyName,jdbcType=VARCHAR},
-      </if>
-      <if test="record.babyNameExplain != null">
-        baby_name_explain = #{record.babyNameExplain,jdbcType=VARCHAR},
       </if>
       <if test="record.commitTime != null">
         commit_time = #{record.commitTime,jdbcType=TIMESTAMP},
       </if>
       <if test="record.uesrId != null">
-        uesr_id = #{record.uesrId,jdbcType=INTEGER},
+        uesr_id = #{record.uesrId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.babyNameExplain != null">
+        baby_name_explain = #{record.babyNameExplain,jdbcType=LONGVARCHAR},
       </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update baby_names
+    set id = #{record.id,jdbcType=VARCHAR},
+      baby_name = #{record.babyName,jdbcType=VARCHAR},
+      commit_time = #{record.commitTime,jdbcType=TIMESTAMP},
+      uesr_id = #{record.uesrId,jdbcType=VARCHAR},
+      baby_name_explain = #{record.babyNameExplain,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
   <update id="updateByExample" parameterType="map">
     update baby_names
-    set id = #{record.id,jdbcType=INTEGER},
+    set id = #{record.id,jdbcType=VARCHAR},
       baby_name = #{record.babyName,jdbcType=VARCHAR},
-      baby_name_explain = #{record.babyNameExplain,jdbcType=VARCHAR},
       commit_time = #{record.commitTime,jdbcType=TIMESTAMP},
-      uesr_id = #{record.uesrId,jdbcType=INTEGER}
+      uesr_id = #{record.uesrId,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -189,25 +229,32 @@
       <if test="babyName != null">
         baby_name = #{babyName,jdbcType=VARCHAR},
       </if>
-      <if test="babyNameExplain != null">
-        baby_name_explain = #{babyNameExplain,jdbcType=VARCHAR},
-      </if>
       <if test="commitTime != null">
         commit_time = #{commitTime,jdbcType=TIMESTAMP},
       </if>
       <if test="uesrId != null">
-        uesr_id = #{uesrId,jdbcType=INTEGER},
+        uesr_id = #{uesrId,jdbcType=VARCHAR},
+      </if>
+      <if test="babyNameExplain != null">
+        baby_name_explain = #{babyNameExplain,jdbcType=LONGVARCHAR},
       </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.baby.babyproject.module.dao.entity.BabyNames">
+    update baby_names
+    set baby_name = #{babyName,jdbcType=VARCHAR},
+      commit_time = #{commitTime,jdbcType=TIMESTAMP},
+      uesr_id = #{uesrId,jdbcType=VARCHAR},
+      baby_name_explain = #{babyNameExplain,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.baby.babyproject.module.dao.entity.BabyNames">
     update baby_names
     set baby_name = #{babyName,jdbcType=VARCHAR},
-      baby_name_explain = #{babyNameExplain,jdbcType=VARCHAR},
       commit_time = #{commitTime,jdbcType=TIMESTAMP},
-      uesr_id = #{uesrId,jdbcType=INTEGER}
-    where id = #{id,jdbcType=INTEGER}
+      uesr_id = #{uesrId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
   </update>
   <select id="selectOneByExample" parameterType="com.baby.babyproject.module.dao.entity.BabyNamesExample" resultMap="BaseResultMap">
     <!--
@@ -218,6 +265,26 @@
     select
     'true' as QUERYID,
     <include refid="Base_Column_List" />
+    from baby_names
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    limit 1
+  </select>
+  <select id="selectOneByExampleWithBLOBs" parameterType="com.baby.babyproject.module.dao.entity.BabyNamesExample" resultMap="ResultMapWithBLOBs">
+    <!--
+      WARNING - @mbg.generated
+      This element is automatically generated by MyBatis Generator, do not modify.
+      @project https://github.com/itfsw/mybatis-generator-plugin
+    -->
+    select
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
     from baby_names
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />

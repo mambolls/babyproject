@@ -61,17 +61,25 @@ public class BabyNamesServiceImpl implements IBabyNamesService {
                 user.setCreateTime(new Date());
                 user.setPhone(phone);
                 user.setUserName(userName);
-                this.userServiceDao.insertSelective(user);
+                user.setId(UUID.randomUUID().toString());
+                Result result = this.userServiceDao.insertSelective(user);
+                if (result.getCode() == Result.CODE_FAIL){
+                    log.error("用户信息插入错误：{}",result.getMessage());
+                    return result;
+                }
             }else {
                 user = object;
             }
         }
         BeanUtils.copyProperties(req,babyNames);
+        babyNames.setId(UUID.randomUUID().toString());
         babyNames.setUesrId(user.getId());
         babyNames.setCommitTime(new Date());
-        this.babyNamesServiceDao.insertSelective(babyNames);
-        Result<BabyNames> result = Result.newSuccess(babyNames);
-        result.setMessage("操作成功！");
+        Result result = this.babyNamesServiceDao.insertSelective(babyNames);
+       if (Result.CODE_SUCCESS == result.getCode()){
+           result.setMessage("操作成功！");
+           result.setObject(babyNames);
+       }
         return result;
     }
 
@@ -90,7 +98,7 @@ public class BabyNamesServiceImpl implements IBabyNamesService {
         }
         List<BabyNamesRsp> result = new ArrayList<>();
         List<BabyNames> babyNames = this.babyNamesServiceDao.selectByExample(babyNamesExample).getObject();
-        List<Integer> userIds = new ArrayList<>();
+        List<String> userIds = new ArrayList<>();
         babyNames.stream().forEach(e -> {
             if (ObjectHelper.isNotEmpty(e.getUesrId())){
                 userIds.add(e.getUesrId());
@@ -161,7 +169,7 @@ public class BabyNamesServiceImpl implements IBabyNamesService {
         // 获取token
         String uuid = UUID.randomUUID().toString();
         JwtUserInfo userInfo = new JwtUserInfo();
-        userInfo.setPatientId(String.valueOf(user.getId()));
+        userInfo.setPatientId(user.getId());
         userInfo.setPhoneNumber(user.getPhone());
         userInfo.setUuid(uuid);
         String token = JwtTokenUtil.generateToken(uuid, userInfo);
@@ -185,7 +193,7 @@ public class BabyNamesServiceImpl implements IBabyNamesService {
             if (ObjectHelper.isEmpty(req.getToken())){return Result.newFailure("token is null","token为空");}
             JwtUserInfo userInfo = JwtTokenUtil.getPayLoad(req.getToken());
             if (ObjectHelper.isEmpty(userInfo)){return Result.newFailure("user is null","用户不存在");}
-            User object = this.userServiceDao.selectByPrimaryKey(Integer.valueOf(userInfo.getPatientId())).getObject();
+            User object = this.userServiceDao.selectByPrimaryKey(userInfo.getPatientId()).getObject();
             if (ObjectHelper.isEmpty(object)){return  Result.newFailure("user is null","用户不存在");}
             return Result.newSuccess(true);
         }catch (Exception e) {

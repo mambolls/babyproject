@@ -2,9 +2,7 @@ package com.baby.babyproject.module.dao.server;
 
 import com.baby.babyproject.module.dao.entity.BabyNames;
 import com.baby.babyproject.module.dao.entity.BabyNamesExample;
-import com.baby.babyproject.module.dao.mapper.BabyNamesMapper;
 import com.baby.babyproject.util.Result;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -14,7 +12,7 @@ public interface IBabyNamesServiceDao {
 
     Result deleteByExample(BabyNamesExample example);
 
-    Result deleteByPrimaryKey(Integer id);
+    Result deleteByPrimaryKey(String id);
 
     Result insert(BabyNames record);
 
@@ -22,7 +20,7 @@ public interface IBabyNamesServiceDao {
 
     Result<List<BabyNames>> selectByExample(BabyNamesExample example);
 
-    Result<BabyNames> selectByPrimaryKey(Integer id);
+    Result<BabyNames> selectByPrimaryKey(String id);
 
     Result updateByExampleSelective( BabyNames record, BabyNamesExample example);
 

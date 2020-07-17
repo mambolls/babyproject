@@ -17,5 +17,5 @@ import java.util.List;
 public class BabyNamesDelReq implements Serializable {
     /** 主键id */
     @NotNull(message = "参数id不能为空")
-    private List<Integer> idList;
+    private List<String> idList;
 }

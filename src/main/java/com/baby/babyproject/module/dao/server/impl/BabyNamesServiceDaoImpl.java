@@ -57,7 +57,7 @@ public class BabyNamesServiceDaoImpl implements IBabyNamesServiceDao {
     }
 
     @Override
-    public Result deleteByPrimaryKey(Integer id) {
+    public Result deleteByPrimaryKey(String id) {
         try{
             int state = this.babyNamesMapper.deleteByPrimaryKey(id);
             if (ObjectHelper.isNotEmpty(state) && 0 < state){
@@ -117,7 +117,7 @@ public class BabyNamesServiceDaoImpl implements IBabyNamesServiceDao {
     }
 
     @Override
-    public Result<BabyNames> selectByPrimaryKey(Integer id) {
+    public Result<BabyNames> selectByPrimaryKey(String id) {
         try{
             BabyNames babyName = this.babyNamesMapper.selectByPrimaryKey(id);
             return Result.newSuccess(babyName);
