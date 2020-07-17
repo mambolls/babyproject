@@ -155,6 +155,7 @@ public class BabyNamesServiceImpl implements IBabyNamesService {
         if (ObjectHelper.isEmpty(user)){
             return Result.newFailure("用户不存在","user is null");
         }
+        if (ObjectHelper.isEmpty(user.getPassWord())){return Result.newFailure("用户不存在","user is null");}
         boolean equals = req.getPassword().equals(user.getPassWord());
         if (!equals){return Result.newFailure("密码错误","passWord is error");}
         // 获取token
