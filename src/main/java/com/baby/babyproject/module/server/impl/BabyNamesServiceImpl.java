@@ -6,12 +6,12 @@ import com.baby.babyproject.module.dao.entity.User;
 import com.baby.babyproject.module.dao.entity.UserExample;
 import com.baby.babyproject.module.dao.server.IBabyNamesServiceDao;
 import com.baby.babyproject.module.dao.server.IUserServiceDao;
-import com.baby.babyproject.module.request.BabyNameReq;
-import com.baby.babyproject.module.request.BabyNamesDelReq;
-import com.baby.babyproject.module.request.BabyNamesListReq;
-import com.baby.babyproject.module.request.BabyNamesSaveReq;
+import com.baby.babyproject.module.request.*;
 import com.baby.babyproject.module.response.BabyNamesRsp;
+import com.baby.babyproject.module.response.LoginResp;
 import com.baby.babyproject.module.server.IBabyNamesService;
+import com.baby.babyproject.util.JwtTokenUtil;
+import com.baby.babyproject.util.JwtUserInfo;
 import com.baby.babyproject.util.ObjectHelper;
 import com.baby.babyproject.util.Result;
 import com.github.pagehelper.Page;
@@ -26,6 +26,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @ClassName BabyNamesServiceImpl
@@ -135,5 +136,60 @@ public class BabyNamesServiceImpl implements IBabyNamesService {
         BabyNamesRsp rsp = new BabyNamesRsp();
         BeanUtils.copyProperties(babyName,rsp);
         return Result.newSuccess(rsp);
+    }
+
+    /** 
+     * @Name login
+     * @Description 登录
+     * @Param [req]
+     * @Return com.baby.babyproject.util.Result<com.baby.babyproject.module.response.LoginResp>
+     * @Author lilinsong 
+     * @Date 12:34 2020/7/16
+     **/
+    @Override
+    public Result<LoginResp> login(LoginReq req) {
+        // 查询用户信息
+        UserExample example = new UserExample();
+        example.createCriteria().andPhoneEqualTo(req.getPhone());
+        User user = this.userServiceDao.selectOneByExample(example).getObject();
+        if (ObjectHelper.isEmpty(user)){
+            return Result.newFailure("用户不存在","user is null");
+        }
+        boolean equals = req.getPassword().equals(user.getPassWord());
+        if (!equals){return Result.newFailure("密码错误","passWord is error");}
+        // 获取token
+        String uuid = UUID.randomUUID().toString();
+        JwtUserInfo userInfo = new JwtUserInfo();
+        userInfo.setPatientId(String.valueOf(user.getId()));
+        userInfo.setPhoneNumber(user.getPhone());
+        userInfo.setUuid(uuid);
+        String token = JwtTokenUtil.generateToken(uuid, userInfo);
+        LoginResp loginResp = new LoginResp();
+        loginResp.setToken(token);
+        loginResp.setStatus(equals);
+        return Result.newSuccess(loginResp);
+    }
+
+    /** 
+     * @Name tokenValid
+     * @Description token验证
+     * @Param [req]
+     * @Return com.baby.babyproject.util.Result<java.lang.Boolean>
+     * @Author lilinsong 
+     * @Date 14:18 2020/7/16
+     **/
+    @Override
+    public Result<Boolean> tokenValid(TokenValidReq req) {
+        try{
+            if (ObjectHelper.isEmpty(req.getToken())){return Result.newFailure("token is null","token为空");}
+            JwtUserInfo userInfo = JwtTokenUtil.getPayLoad(req.getToken());
+            if (ObjectHelper.isEmpty(userInfo)){return Result.newFailure("user is null","用户不存在");}
+            User object = this.userServiceDao.selectByPrimaryKey(Integer.valueOf(userInfo.getPatientId())).getObject();
+            if (ObjectHelper.isEmpty(object)){return  Result.newFailure("user is null","用户不存在");}
+            return Result.newSuccess(true);
+        }catch (Exception e) {
+            log.error("token 解析异常：{}",e.getMessage());
+            return Result.newFailure("token is exception","token 解析异常");
+        }
     }
 }

@@ -1,16 +1,17 @@
 package com.baby.babyproject.module.controller;
 
 import com.baby.babyproject.module.dao.entity.BabyNames;
-import com.baby.babyproject.module.request.BabyNameReq;
-import com.baby.babyproject.module.request.BabyNamesDelReq;
-import com.baby.babyproject.module.request.BabyNamesListReq;
-import com.baby.babyproject.module.request.BabyNamesSaveReq;
+import com.baby.babyproject.module.request.*;
 import com.baby.babyproject.module.response.BabyNamesRsp;
+import com.baby.babyproject.module.response.LoginResp;
 import com.baby.babyproject.module.server.IBabyNamesService;
 import com.baby.babyproject.util.Result;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
@@ -46,5 +47,17 @@ public class BabyNamesController {
     @PostMapping("/getOne")
     public Result<BabyNamesRsp> getOne(@Valid @RequestBody BabyNameReq req){
         return this.babyNamesService.getOne(req);
+    }
+
+    @PostMapping("/valid")
+    public Result<LoginResp> login(@RequestBody LoginReq req){
+        return this.babyNamesService.login(req);
+
+    }
+
+    @PostMapping("/token")
+    public Result<Boolean> token(@RequestBody TokenValidReq req){
+        return this.babyNamesService.tokenValid(req);
+
     }
 }

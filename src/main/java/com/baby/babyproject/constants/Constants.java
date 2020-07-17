@@ -10,4 +10,8 @@ package com.baby.babyproject.constants;
 public class Constants {
 
     public static final String LOG_TOPIC = "log";
+
+    public static final String PHONE = "18580255520";
+
+    public static final String PASS = "zaiyiqi1";
 }

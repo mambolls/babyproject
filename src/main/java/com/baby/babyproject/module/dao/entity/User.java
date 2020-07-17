@@ -10,6 +10,8 @@ public class User implements Serializable {
 
     private String phone;
 
+    private String passWord;
+
     private Date createTime;
 
     private static final long serialVersionUID = 1L;
@@ -36,6 +38,14 @@ public class User implements Serializable {
 
     public void setPhone(String phone) {
         this.phone = phone == null ? null : phone.trim();
+    }
+
+    public String getPassWord() {
+        return passWord;
+    }
+
+    public void setPassWord(String passWord) {
+        this.passWord = passWord == null ? null : passWord.trim();
     }
 
     public Date getCreateTime() {

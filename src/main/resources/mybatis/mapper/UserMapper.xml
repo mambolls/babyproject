@@ -5,6 +5,7 @@
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="user_name" jdbcType="VARCHAR" property="userName" />
     <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="pass_word" jdbcType="VARCHAR" property="passWord" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
   </resultMap>
   <sql id="Example_Where_Clause">
@@ -66,7 +67,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, user_name, phone, create_time
+    id, user_name, phone, pass_word, create_time
   </sql>
   <select id="selectByExample" parameterType="com.baby.babyproject.module.dao.entity.UserExample" resultMap="BaseResultMap">
     select
@@ -103,10 +104,10 @@
     <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into user (user_name, phone, create_time
-      )
-    values (#{userName,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}
-      )
+    insert into user (user_name, phone, pass_word, 
+      create_time)
+    values (#{userName,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{passWord,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.baby.babyproject.module.dao.entity.User">
     <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
@@ -120,6 +121,9 @@
       <if test="phone != null">
         phone,
       </if>
+      <if test="passWord != null">
+        pass_word,
+      </if>
       <if test="createTime != null">
         create_time,
       </if>
@@ -130,6 +134,9 @@
       </if>
       <if test="phone != null">
         #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="passWord != null">
+        #{passWord,jdbcType=VARCHAR},
       </if>
       <if test="createTime != null">
         #{createTime,jdbcType=TIMESTAMP},
@@ -154,6 +161,9 @@
       <if test="record.phone != null">
         phone = #{record.phone,jdbcType=VARCHAR},
       </if>
+      <if test="record.passWord != null">
+        pass_word = #{record.passWord,jdbcType=VARCHAR},
+      </if>
       <if test="record.createTime != null">
         create_time = #{record.createTime,jdbcType=TIMESTAMP},
       </if>
@@ -167,6 +177,7 @@
     set id = #{record.id,jdbcType=INTEGER},
       user_name = #{record.userName,jdbcType=VARCHAR},
       phone = #{record.phone,jdbcType=VARCHAR},
+      pass_word = #{record.passWord,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=TIMESTAMP}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -181,6 +192,9 @@
       <if test="phone != null">
         phone = #{phone,jdbcType=VARCHAR},
       </if>
+      <if test="passWord != null">
+        pass_word = #{passWord,jdbcType=VARCHAR},
+      </if>
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
@@ -191,6 +205,7 @@
     update user
     set user_name = #{userName,jdbcType=VARCHAR},
       phone = #{phone,jdbcType=VARCHAR},
+      pass_word = #{passWord,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
