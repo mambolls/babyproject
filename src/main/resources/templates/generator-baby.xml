@@ -48,12 +48,12 @@
 
 
         <!--注册模块信息表-->
-<!--        <table tableName="baby_names" domainObjectName="BabyNames" enableCountByExample="true"-->
-<!--               enableUpdateByExample="true"-->
-<!--               enableDeleteByExample="true" enableSelectByExample="true" selectByExampleQueryId="true">-->
-<!--            <property name="useActualColumnNames" value="false"/>-->
-<!--            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>-->
-<!--        </table>-->
+        <table tableName="baby_names" domainObjectName="BabyNames" enableCountByExample="true"
+               enableUpdateByExample="true"
+               enableDeleteByExample="true" enableSelectByExample="true" selectByExampleQueryId="true">
+            <property name="useActualColumnNames" value="false"/>
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>
 
         <table tableName="user" domainObjectName="User" enableCountByExample="true"
                enableUpdateByExample="true"

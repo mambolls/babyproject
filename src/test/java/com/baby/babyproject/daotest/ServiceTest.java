@@ -59,8 +59,8 @@ public class ServiceTest {
     @Test
     public void delete(){
         BabyNamesDelReq req = new BabyNamesDelReq();
-        List<Integer> idList = new ArrayList<>();
-        idList.add(2);
+        List<String> idList = new ArrayList<>();
+        idList.add("2");
         req.setIdList(idList);
         log.info(idList.size()+"");
         Result<String> result = this.babyNamesService.deleteBabyNames(req);

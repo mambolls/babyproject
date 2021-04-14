@@ -2,6 +2,7 @@ package com.baby.babyproject.daotest;
 
 import com.alibaba.fastjson.JSON;
 import com.baby.babyproject.compoment.JedisUtil;
+import com.baby.babyproject.compoment.RedisTemplateHelper;
 import com.baby.babyproject.module.dao.entity.BabyNames;
 import com.baby.babyproject.module.dao.entity.BabyNamesExample;
 import com.baby.babyproject.module.dao.entity.User;
@@ -60,14 +61,15 @@ public class DaoTest {
         log.info("babyNames{}", FormatJsonUtil.formatJson(JSON.toJSONString(listResult)));
         log.info("这是一条分割线=======================================================");
         UserExample userExample = new UserExample();
-        userExample.createCriteria().andIdEqualTo(2);
+        userExample.createCriteria().andIdEqualTo("2");
         Result<List<User>> userList = this.userService.selectByExample(userExample);
         log.info("users{}", FormatJsonUtil.formatJson(JSON.toJSONString(userList)));
     }
 
     @Test
     public void redisTest(){
-        JedisUtil.set("testkey","李林松");
-        log.info(JedisUtil.get("testkey"));
+        RedisTemplateHelper.set("testKey","李林松");
+        log.info(JedisUtil.get("testKey"));
     }
+
 }

@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -25,7 +26,7 @@ public class KafkaReceiver {
     private KafkaFailCacheMapper kafkaFailCacheMapper;
 
     @KafkaListener(topics = {Constants.LOG_TOPIC})
-    public void listen(ConsumerRecord<?, ?> record) {
+    public void listen(ConsumerRecord<?, ?> record, Acknowledgment acknowledgment) {
         Optional<?> kafkaMessage = Optional.ofNullable(record.value());
         Object message = null;
 //        Map<String,Object>  map = new HashMap<>();
@@ -40,6 +41,7 @@ public class KafkaReceiver {
 //                int i = 1/0;
                 BabyProjectLog projectLog = JSON.parseObject(String.valueOf(message), BabyProjectLog.class);
                 this.babyProjectLogServiceDapImpl.insertSelective(projectLog);
+                acknowledgment.acknowledge();
                 log.info("kafka队列消费成功:" + message);
             }
         }catch (Exception e){
